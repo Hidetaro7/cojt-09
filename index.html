@@ -1,6 +1,7 @@
 <!doctype html>
 <html>
   <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Socket.IO chat</title>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -22,16 +23,30 @@
     <script src="/socket.io/socket.io.js"></script> 
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
-
+    var socket = io();
+    var user_name = "ななし";
     navigator.geolocation.watchPosition(successCallback, errorCallback);
 
     function successCallback (position) {
-      $("#messages").append("<li>"+position.coords.latitude+", "+position.coords.longitude+"</li>");
+      var pos_data = {lat: position.coords.latitude, lon: position.coords.longitude, name: user_name}
+      //$("#messages").append("<li>"+pos_data.lat+", "+pos_data.lon+"</li>");
+      socket.emit('chat message', pos_data);
     }
+
+    socket.on('chat message', function(msg){
+      $('#messages').append($('<li>').text(msg.lat + ", " + msg.lon + ", " + msg.name));
+    });
 
     function errorCallback(err) {
       console.log(err)
     }
+
+    $('form').submit(function(){
+      user_name = $('#m').val();
+      return false;
+    });
+
+
       /*$(function () {
         var socket = io();
         $('form').submit(function(){
